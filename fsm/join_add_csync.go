@@ -51,6 +51,8 @@ func JoinAddCsyncPreCondition(z *music.Zone) bool {
 	}
 
 	// Map all known NSes
+	// TODO: open issue adjust naming: we are looping through signers not ns
+	// TODO: Make this code a function and write test for this code and make it a function
 	nsmap := make(map[string]*dns.NS)
 	for _, rrs := range nses {
 		for _, rr := range rrs {
@@ -106,12 +108,14 @@ func JoinAddCsyncAction(z *music.Zone) bool {
 		updater := music.GetUpdater(signer.Method)
 		err, csyncrrs := updater.FetchRRset(signer, z.Name, z.Name, dns.TypeCSYNC)
 		if err != nil {
+			// TODO: Handle error from stop reason. Should we log it? What should we log?
 			err, _ = z.SetStopReason(fmt.Sprintf("Unable to fetch CSYNC RRset from %s: %v", signer.Name, err))
 			return false
 		}
 		if len(csyncrrs) != 0 {
 			if err := updater.RemoveRRset(signer, z.Name, z.Name,
 				[][]dns.RR{[]dns.RR{z.CSYNC}}); err != nil {
+				// TODO: Handle error from stop reason.
 				z.SetStopReason(fmt.Sprintf("Unable to remove CSYNC record sets from %s: %s",
 					signer.Name, err))
 				return false
@@ -120,6 +124,7 @@ func JoinAddCsyncAction(z *music.Zone) bool {
 		}
 
 		log.Printf("%s: Creating CSYNC record sets", z.Name)
+		// TODO: Move Csync construction to here:
 
 		if err := updater.Update(signer, z.Name, z.Name,
 			&[][]dns.RR{[]dns.RR{z.CSYNC}}, nil); err != nil {

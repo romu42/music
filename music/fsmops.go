@@ -207,6 +207,7 @@ func (mdb *MusicDB) ZoneStepFsm(tx *sql.Tx, dbzone *Zone, nextstate string) (boo
 			}
 		} else {
 			return false, "", fmt.Errorf(
+				// TODO: If we implement multiple states we should print out the possible states at this point
 				"Multiple possible next states from '%s': [%s] but next state not specified",
 				state, strings.Join(transitions, " "))
 		}
@@ -244,6 +245,7 @@ func (z *Zone) AttemptStateTransition(tx *sql.Tx, nextstate string,
 	if t.PreCondition(z) {
 		log.Printf("AttemptStateTransition: zone '%s'--> '%s': PreCondition: true\n", z.Name, nextstate)
 		t.Action(z)
+		// TODO: Investigate dealing with return value bool
 		if t.PostCondition != nil {
 			postcond := t.PostCondition(z)
 			if postcond {

@@ -153,6 +153,7 @@ func (mdb *MusicDB) DeleteZone(z *Zone) (string, error) {
 }
 
 func (z *Zone) SetStopReason(value string) (error, string) {
+	// TODO: Should stop reason return error code or not, explore and explain.
 	mdb := z.MusicDB
 
 	mdb.StopReasonCache[z.Name] = value
